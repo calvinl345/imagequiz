@@ -25,16 +25,16 @@ const Menu = (props) => {
                 <Navbar.Brand href="/">My App</Navbar.Brand>
                 <Navbar.Toggle />
                 <Navbar.Collapse className="justify-content-end">
-                    <Nav.Link href="/">Home</Nav.Link>
+                    <Nav.Link href="#">Home</Nav.Link>
 
                     {customer ? (
-                        <Nav.Link href="/signup" on onClick={logoff}>
+                        <Nav.Link href="#signup" on onClick={logoff}>
                             log Off
                         </Nav.Link>
                     ) : (
-                        <Nav.Link href="/login">Sign In</Nav.Link>
+                        <Nav.Link href="#login">Sign In</Nav.Link>
                     )}
-                    <Nav.Link href="/signup">Sign Up</Nav.Link>
+                    <Nav.Link href="#signup">Sign Up</Nav.Link>
                     {customer ? (
                         <Navbar.Text>
                             Signed in as:{" "}
