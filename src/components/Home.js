@@ -15,7 +15,7 @@ const Home = () => {
                     {!customer ? (
                         <p>
                             <div>Choose a Flower to take the Quiz.</div>
-                            <a href="/signup">Sign In</a> to save your score!
+                            <a href="#signup">Sign In</a> to save your score!
                         </p>
                     ) : (
                         <p>Choose a Flower to take the Quiz.</p>
