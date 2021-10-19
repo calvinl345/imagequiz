@@ -22,7 +22,7 @@ const Menu = (props) => {
     return (
         <Navbar bg="dark" variant="dark">
             <Container>
-                <Navbar.Brand href="/">My App</Navbar.Brand>
+                <Navbar.Brand href="#/">My App</Navbar.Brand>
                 <Navbar.Toggle />
                 <Navbar.Collapse className="justify-content-end">
                     <Nav.Link href="#/">Home</Nav.Link>
