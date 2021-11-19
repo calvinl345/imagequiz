@@ -7,23 +7,34 @@ import {
     Button,
     ListGroup,
 } from "react-bootstrap";
-import quizzes from "../data";
+import api from "../communication/api";
 import { useHistory, useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 const Quiz = (props) => {
     //console.log(quizzes);
     const history = useHistory();
+    const [questions, setQuestions] = useState([]);
     const [customer, setCustomer] = useState(localStorage.getItem("customer"));
     const [userScore, setUserScore] = useState(0);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [score, setScore] = useState(0);
     const [gameOver, setGameOver] = useState(false);
     const { quizName } = useParams();
-    const questions = quizzes.find((questionArray) =>
-        questionArray.find((question) => question.answer === quizName)
-    );
+    //const questions = quizzes.find((questionArray) =>
+    //    questionArray.find((question) => question.answer === quizName)
+    //);
     //console.log(questions);
+
+    useEffect(() => {
+        if (!questions.length > 0) {
+            api.getQuiz(quizName).then((x) => {
+                console.log(x);
+                setQuestions(x);
+            });
+        }
+    });
+
     let nextQuestion = (selectedChoice) => {
         if (currentIndex < questions.length - 1) {
             setCurrentIndex(currentIndex + 1);
@@ -42,15 +53,13 @@ const Quiz = (props) => {
     };
 
     const saveScore = () => {
-        localStorage.setItem("userScore", score);
-        props.onUserScoreSet();
-        console.log("score saved to local storage");
-        setUserScore(score);
-
-        history.push({ pathname: "/" });
+        api.saveScore(customer, quizName, score).then((x) =>
+            history.push({ pathname: "/" })
+        );
     };
 
-    let shuffle = (array) => {
+    let shuffle = (choices) => {
+        let array = choices.split(",");
         let currentIndex = array.length,
             randomIndex;
 
@@ -74,69 +83,83 @@ const Quiz = (props) => {
         setCustomer(localStorage.getItem("customer"));
     });
     return (
-        <Container>
-            {!gameOver ? (
+        <>
+            {questions.length > 0 ? (
                 <Container>
-                    <Row className="justify-content-md-center">
-                        <Col md="auto">
-                            <Image
-                                src={questions[currentIndex].picture}
-                            ></Image>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <ListGroup>
-                                {shuffle(questions[currentIndex].choices).map(
-                                    (choice) => (
-                                        <ListGroup.Item
-                                            key={choice}
-                                            onClick={() => nextQuestion(choice)}
-                                            action
-                                            variant="primary"
-                                        >
-                                            {choice}
-                                        </ListGroup.Item>
-                                    )
-                                )}
-                            </ListGroup>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>score: {score}</Col>
-                    </Row>
-                </Container>
-            ) : (
-                ""
-            )}
+                    {!gameOver ? (
+                        <Container>
+                            <Row className="justify-content-md-center">
+                                <Col md="auto">
+                                    <Image
+                                        src={questions[currentIndex].picture}
+                                    ></Image>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    <ListGroup>
+                                        {shuffle(
+                                            questions[currentIndex].choices
+                                        ).map((choice) => (
+                                            <ListGroup.Item
+                                                key={choice}
+                                                onClick={() =>
+                                                    nextQuestion(choice)
+                                                }
+                                                action
+                                                variant="primary"
+                                            >
+                                                {choice}
+                                            </ListGroup.Item>
+                                        ))}
+                                    </ListGroup>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>score: {score}</Col>
+                            </Row>
+                        </Container>
+                    ) : (
+                        ""
+                    )}
 
-            {gameOver ? (
-                <Container>
-                    <Card className="text-center">
-                        <Card.Header>The quiz is over</Card.Header>
-                        <Card.Body>
-                            <Card.Title>Score: {score}</Card.Title>
-                            <Card.Text>What do you want to do next?</Card.Text>
-                            <Button onClick={restartQuiz}>Restart</Button>
-                            {customer ? (
-                                <Button onClick={saveScore}>Save Score</Button>
-                            ) : (
-                                ""
-                            )}
-                            <Link to="/">
-                                {" "}
-                                <Button>Go Home</Button>{" "}
-                            </Link>
-                        </Card.Body>
-                        <Card.Footer className="text-muted">
-                            2 days ago
-                        </Card.Footer>
-                    </Card>
+                    {gameOver ? (
+                        <Container>
+                            <Card className="text-center">
+                                <Card.Header>The quiz is over</Card.Header>
+                                <Card.Body>
+                                    <Card.Title>Score: {score}</Card.Title>
+                                    <Card.Text>
+                                        What do you want to do next?
+                                    </Card.Text>
+                                    <Button onClick={restartQuiz}>
+                                        Restart
+                                    </Button>
+                                    {customer ? (
+                                        <Button onClick={saveScore}>
+                                            Save Score
+                                        </Button>
+                                    ) : (
+                                        ""
+                                    )}
+                                    <Link to="/">
+                                        {" "}
+                                        <Button>Go Home</Button>{" "}
+                                    </Link>
+                                </Card.Body>
+                                <Card.Footer className="text-muted">
+                                    2 days ago
+                                </Card.Footer>
+                            </Card>
+                        </Container>
+                    ) : (
+                        ""
+                    )}
                 </Container>
             ) : (
-                ""
+                <div>Retriving the quiz</div>
             )}
-        </Container>
+        </>
     );
 };
 export default Quiz;
