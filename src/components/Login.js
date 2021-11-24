@@ -3,6 +3,7 @@ import Container from "react-bootstrap/Container";
 import { useState } from "react";
 import customers from "../stores/customers";
 import { useHistory } from "react-router-dom";
+import api from "../communication/api";
 
 const Login = (props) => {
     const [username, setUsername] = useState("");
@@ -10,18 +11,17 @@ const Login = (props) => {
     const history = useHistory();
 
     let login = (e) => {
-        let found = customers.find(
-            (x) => (x.username === username) & (x.password === password)
-        );
-        if (found) {
-            console.log(found);
-            localStorage.setItem("customer", username);
-            history.push({ pathname: "/" });
-            props.onCustomerlogin();
-        } else {
-            alert("User not found. Please Sign Up.");
-            history.push({ pathname: "/signup" });
-        }
+        api.login(username, password).then((x) => {
+            if (x.isValid) {
+                console.log(x.isValid);
+                localStorage.setItem("customer", username);
+                history.push({ pathname: "/" });
+                props.onCustomerlogin();
+            } else {
+                alert("User not found. Please Sign Up.");
+                history.push({ pathname: "/signup" });
+            }
+        });
     };
     let onUsernameChanged = (e) => {
         setUsername(e.target.value);

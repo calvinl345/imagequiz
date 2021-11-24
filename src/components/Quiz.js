@@ -15,7 +15,6 @@ const Quiz = (props) => {
     //console.log(quizzes);
     const history = useHistory();
     const [questions, setQuestions] = useState([]);
-    const [customer, setCustomer] = useState(localStorage.getItem("customer"));
     const [userScore, setUserScore] = useState(0);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [score, setScore] = useState(0);
@@ -53,7 +52,8 @@ const Quiz = (props) => {
     };
 
     const saveScore = () => {
-        api.saveScore(customer, quizName, score).then((x) =>
+        let email = localStorage.getItem("customer");
+        api.saveScore(email, quizName, score).then((x) =>
             history.push({ pathname: "/" })
         );
     };
@@ -80,7 +80,7 @@ const Quiz = (props) => {
     };
 
     useEffect(() => {
-        setCustomer(localStorage.getItem("customer"));
+        //setCustomer(localStorage.getItem("customer"));
     });
     return (
         <>
@@ -135,13 +135,11 @@ const Quiz = (props) => {
                                     <Button onClick={restartQuiz}>
                                         Restart
                                     </Button>
-                                    {customer ? (
+                                    {
                                         <Button onClick={saveScore}>
                                             Save Score
                                         </Button>
-                                    ) : (
-                                        ""
-                                    )}
+                                    }
                                     <Link to="/">
                                         {" "}
                                         <Button>Go Home</Button>{" "}
