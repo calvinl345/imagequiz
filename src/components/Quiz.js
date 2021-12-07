@@ -26,10 +26,16 @@ const Quiz = (props) => {
     //console.log(questions);
 
     useEffect(() => {
+        console.log(props);
         if (!questions.length > 0) {
             api.getQuiz(quizName).then((x) => {
-                console.log(x);
-                setQuestions(x);
+                if (x.done) {
+                    console.log(x);
+                    setQuestions(x.quiz);
+                } else {
+                    console.log(x);
+                    history.push({ pathname: "/login" });
+                }
             });
         }
     });

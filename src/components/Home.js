@@ -10,7 +10,7 @@ const Home = () => {
         setCustomer(localStorage.getItem("customer"));
         if (flowers.length === 0) {
             api.getFlowers().then((x) => {
-                console.log("log", x);
+                //console.log("log", x);
                 setFlowers(x);
             });
         }

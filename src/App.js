@@ -1,4 +1,9 @@
-import { HashRouter as Router, Switch, Route } from "react-router-dom";
+import {
+    HashRouter as Router,
+    Switch,
+    Route,
+    Redirect,
+} from "react-router-dom";
 import Menu from "./components/Menu/Menu";
 import Home from "./components/Home";
 import Register from "./components/Register";
@@ -12,8 +17,8 @@ const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [userScoreSet, setUserScoreSet] = useState(false);
     const onCustomerlogin = () => {
+        console.log("onCustomerLogin");
         setIsAuthenticated(true);
-        return null;
     };
     const onUserScoreSet = () => {
         if (userScoreSet === true) {
@@ -21,7 +26,6 @@ const App = () => {
         } else {
             setUserScoreSet(true);
         }
-        return null;
     };
     return (
         <Router>
@@ -43,12 +47,33 @@ const App = () => {
                     <Route path="/login">
                         <Login onCustomerlogin={onCustomerlogin} />
                     </Route>
-                    <Route path="/quiz/:quizName">
+                    <PrivateRoute path="/quiz/:quizName">
                         <Quiz onUserScoreSet={onUserScoreSet} />
-                    </Route>
+                    </PrivateRoute>
                 </Switch>
             </Container>
         </Router>
+    );
+};
+
+let PrivateRoute = ({ children, ...rest }) => {
+    let customer = localStorage.getItem("customer");
+    return (
+        <Route
+            {...rest}
+            render={({ location }) =>
+                customer ? (
+                    children
+                ) : (
+                    <Redirect
+                        to={{
+                            pathname: "/login",
+                            state: { from: location },
+                        }}
+                    />
+                )
+            }
+        />
     );
 };
 

@@ -11,17 +11,21 @@ const Login = (props) => {
     const history = useHistory();
 
     let login = (e) => {
-        api.login(username, password).then((x) => {
-            if (x.isValid) {
-                console.log(x.isValid);
-                localStorage.setItem("customer", username);
-                history.push({ pathname: "/" });
-                props.onCustomerlogin();
-            } else {
-                alert("User not found. Please Sign Up.");
-                history.push({ pathname: "/signup" });
-            }
-        });
+        api.login(username, password)
+            .then((x) => {
+                if (x.done) {
+                    console.log(x.done);
+                    localStorage.setItem("customer", username);
+                    props.onCustomerlogin();
+                    history.push({ pathname: "/" });
+                } else {
+                    alert("User not found. Please Sign Up.");
+                    history.push({ pathname: "/signup" });
+                }
+            })
+            .catch((e) => {
+                console.log(e);
+            });
     };
     let onUsernameChanged = (e) => {
         setUsername(e.target.value);

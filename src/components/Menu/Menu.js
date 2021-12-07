@@ -2,6 +2,7 @@ import Container from "react-bootstrap/Container";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import { useEffect, useState } from "react";
+import api from "../../communication/api";
 
 const Menu = (props) => {
     const [customer, setCustomer] = useState(localStorage.getItem("customer"));
@@ -9,12 +10,24 @@ const Menu = (props) => {
         localStorage.getItem("userScore")
     );
     const logoff = () => {
-        localStorage.removeItem("customer");
-        localStorage.removeItem("userScore");
-        setCustomer(undefined);
+        api.logout()
+            .then((x) => {
+                if (x.done) {
+                    localStorage.removeItem("customer");
+                    localStorage.removeItem("userScore");
+                    setCustomer(undefined);
+                } else {
+                    console.log(x, "there was an error");
+                }
+            })
+            .catch((e) => {
+                console.log("error in logoff ", e);
+            });
     };
 
     useEffect(() => {
+        console.log("in effect Menu");
+        console.log(props.isAuthenticated);
         setCustomer(localStorage.getItem("customer"));
         setUserScore(localStorage.getItem("userScore"));
     });
